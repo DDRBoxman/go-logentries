@@ -18,6 +18,7 @@ type Logentries struct {
 const logentriesServer = "data.logentries.com"
 const logentriesSecureServer = "api.logentries.com"
 
+// Create a new logentries instance
 func New(token string) (l *Logentries) {
 	l = new(Logentries)
 	l.token = token
@@ -32,6 +33,11 @@ func New(token string) (l *Logentries) {
 	return
 }
 
+// Set the port to send data to Logentries on
+//
+// Valid ports: 80, 514, 10000, 20000
+//
+// 20000 automatically enables SSL
 func (l *Logentries) Port(port int) {
 	if port == 20000 {
 		l.ssl = true
@@ -43,6 +49,9 @@ func (l *Logentries) Port(port int) {
 	l.port = port
 }
 
+// Use SSL when sending data to Logentries
+//
+// Sets port to 20000
 func (l *Logentries) UseSSL(useSSL bool) {
 	l.ssl = useSSL
 	l.port = 20000
@@ -58,6 +67,7 @@ func (l *Logentries) connect() {
 	l.connection = conn
 }
 
+// Implement the io.Writer interface
 func (l *Logentries) Write(p []byte) (n int, err error) {
 
 	log := append([]byte(l.token+" "), p...)
@@ -66,6 +76,7 @@ func (l *Logentries) Write(p []byte) (n int, err error) {
 	return
 }
 
+// Clean up the logger and send any remaining messages
 func (l *Logentries) Close() {
 	close(l.logs)
 	<-l.done
