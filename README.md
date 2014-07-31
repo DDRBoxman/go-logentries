@@ -1,6 +1,8 @@
 Logentries logger for Go
 ========================
 
+![GOPHER](http://ddrboxman.github.io/go-logentries/logo.png)
+
 [![MIT](http://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![GODOC](http://img.shields.io/badge/godoc-reference-blue.svg)](https://godoc.org/github.com/DDRBoxman/go-logentries)
 
 Drop in solution for integrating logentries into your app.
