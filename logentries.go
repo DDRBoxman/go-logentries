@@ -3,6 +3,7 @@ package logentries
 import (
 	"fmt"
 	"net"
+	"time"
 )
 
 type Logentries struct {
@@ -83,10 +84,28 @@ func (l *Logentries) Close() {
 	l.connection.Close()
 }
 
+func (l *Logentries)ensureConnection() {
+	buf := make([]byte, 1)
+
+	l.connection.SetReadDeadline(time.Now())
+
+	_, err := l.connection.Read(buf)
+	switch err.(type) {
+	case net.Error:
+		if err.(net.Error).Timeout() == true {
+			l.connection.SetReadDeadline(time.Time{})
+			return
+		}
+	}
+
+	l.connect()
+}
+
 func (l *Logentries) sendMessages() {
 	for {
 		log, more := <-l.logs
 		if more {
+			l.ensureConnection()
 			l.connection.Write(log)
 		} else {
 			break
