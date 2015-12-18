@@ -84,7 +84,7 @@ func (l *Logentries) Close() {
 	l.connection.Close()
 }
 
-func (l *Logentries)ensureConnection() {
+func (l *Logentries) ensureConnection() {
 	buf := make([]byte, 1)
 
 	l.connection.SetReadDeadline(time.Now())
@@ -106,7 +106,10 @@ func (l *Logentries) sendMessages() {
 		log, more := <-l.logs
 		if more {
 			l.ensureConnection()
-			l.connection.Write(log)
+			_, err := l.connection.Write(log)
+			if err != nil {
+				l.connect()
+			}
 		} else {
 			break
 		}
