@@ -87,14 +87,16 @@ func (l *Logentries) Close() {
 func (l *Logentries) ensureConnection() {
 	buf := make([]byte, 1)
 
-	l.connection.SetReadDeadline(time.Now())
+	if (l.connection != nil) {
+		l.connection.SetReadDeadline(time.Now())
 
-	_, err := l.connection.Read(buf)
-	switch err.(type) {
-	case net.Error:
-		if err.(net.Error).Timeout() == true {
-			l.connection.SetReadDeadline(time.Time{})
-			return
+		_, err := l.connection.Read(buf)
+		switch err.(type) {
+		case net.Error:
+			if err.(net.Error).Timeout() == true {
+				l.connection.SetReadDeadline(time.Time{})
+				return
+			}
 		}
 	}
 
